@@ -8,11 +8,10 @@ import (
 	"github.com/dshum/school/config"
 	"github.com/dshum/school/controllers"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
+	err := config.Initialize()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading .env file: %v\n", err)
 		os.Exit(1)
