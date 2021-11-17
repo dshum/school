@@ -30,5 +30,5 @@ func main() {
 	var taskCategoryController controllers.TaskCategoryController
 	router.GET("/task_categories", taskCategoryController.GetTaskCategories)
 	router.GET("/task_categories/:task_category_id", taskCategoryController.GetTaskCategory)
-	router.Run(":9990")
+	router.Run(":9991")
 }
