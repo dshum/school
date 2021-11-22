@@ -11,11 +11,12 @@ import (
 
 var taskCategory models.TaskCategory
 
-type TaskCategoryController struct{}
+type TaskCategoryHandler struct{}
 
-func (*TaskCategoryController) GetTaskCategories(w http.ResponseWriter, r *http.Request) {
-	taskCategories, err := taskCategory.GetList()
-	if err != nil {
+func (*TaskCategoryHandler) GetTaskCategories(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if taskCategories, err := taskCategory.GetList(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 	} else {
@@ -24,12 +25,13 @@ func (*TaskCategoryController) GetTaskCategories(w http.ResponseWriter, r *http.
 	}
 }
 
-func (*TaskCategoryController) GetTaskCategory(w http.ResponseWriter, r *http.Request) {
+func (*TaskCategoryHandler) GetTaskCategory(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["task_category_id"])
 
-	_, err := taskCategory.Get(id)
-	if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+
+	if _, err := taskCategory.Get(id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 	} else {

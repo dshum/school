@@ -12,6 +12,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var taskCategoryHandler controllers.TaskCategoryHandler
+
 func main() {
 	err := config.LoadEnv()
 	if err != nil {
@@ -27,9 +29,8 @@ func main() {
 	defer conn.Close(context.Background())
 
 	r := mux.NewRouter()
-	var taskCategoryController controllers.TaskCategoryController
-	r.HandleFunc("/task_categories", taskCategoryController.GetTaskCategories).Methods("GET")
-	r.HandleFunc("/task_categories/{task_category_id:[0-9]+}", taskCategoryController.GetTaskCategory).Methods("GET")
+	r.HandleFunc("/task_categories", taskCategoryHandler.GetTaskCategories).Methods("GET")
+	r.HandleFunc("/task_categories/{task_category_id:[0-9]+}", taskCategoryHandler.GetTaskCategory).Methods("GET")
 	http.Handle("/", r)
 
 	log.Fatal(http.ListenAndServe(":9991", r))
