@@ -1,52 +1,39 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/dshum/school/models"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 )
+
+var taskCategory models.TaskCategory
 
 type TaskCategoryController struct{}
 
-func (*TaskCategoryController) GetTaskCategories(c *gin.Context) {
-	var taskCategory models.TaskCategory
-	task_categories, err := taskCategory.GetList()
-	if err == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"meta": "Task categories",
-			"data": task_categories,
-		})
+func (*TaskCategoryController) GetTaskCategories(w http.ResponseWriter, r *http.Request) {
+	taskCategories, err := taskCategory.GetList()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 	} else {
-		c.String(http.StatusInternalServerError, err.Error())
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(taskCategories)
 	}
 }
 
-func (*TaskCategoryController) GetTaskCategory(c *gin.Context) {
-	var taskCategory models.TaskCategory
-	id := c.Param("task_category_id")
+func (*TaskCategoryController) GetTaskCategory(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["task_category_id"])
 
-	idInt, err := strconv.Atoi(id)
+	_, err := taskCategory.Get(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid parameter ID",
-			"error":   err.Error(),
-		})
-		return
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+	} else {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(taskCategory)
 	}
-
-	_, err2 := taskCategory.Get(idInt)
-	if err2 != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "Not found",
-			"error":   err2.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"meta": "Task category",
-		"data": taskCategory,
-	})
 }

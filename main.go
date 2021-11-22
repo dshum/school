@@ -3,15 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
 	"os"
 
 	"github.com/dshum/school/config"
 	"github.com/dshum/school/controllers"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	err := config.Initialize()
+	err := config.LoadEnv()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading .env file: %v\n", err)
 		os.Exit(1)
@@ -24,10 +26,11 @@ func main() {
 	}
 	defer conn.Close(context.Background())
 
-	router := gin.Default()
-
+	r := mux.NewRouter()
 	var taskCategoryController controllers.TaskCategoryController
-	router.GET("/task_categories", taskCategoryController.GetTaskCategories)
-	router.GET("/task_categories/:task_category_id", taskCategoryController.GetTaskCategory)
-	router.Run(":9991")
+	r.HandleFunc("/task_categories", taskCategoryController.GetTaskCategories).Methods("GET")
+	r.HandleFunc("/task_categories/{task_category_id:[0-9]+}", taskCategoryController.GetTaskCategory).Methods("GET")
+	http.Handle("/", r)
+
+	log.Fatal(http.ListenAndServe(":9991", r))
 }

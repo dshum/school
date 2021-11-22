@@ -17,7 +17,9 @@ func InitializeDB() (*pgx.Conn, error) {
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
 	dbname := os.Getenv("DB_DBNAME")
+
 	url := fmt.Sprintf("%s://%s:%s@%s:%s/%s", driver, username, password, host, port, dbname)
+
 	var err error
 	DB, err = pgx.Connect(context.Background(), url)
 	return DB, err
