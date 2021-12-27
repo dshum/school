@@ -2,35 +2,38 @@ package main
 
 import (
 	"context"
+	"github.com/dshum/school/internal/auth"
 	"log"
 	"os"
 
 	"github.com/dshum/school/internal/api"
-	"github.com/dshum/school/internal/config"
 	"github.com/dshum/school/internal/db"
+	"github.com/dshum/school/internal/redis"
 	"github.com/dshum/school/internal/task_category"
 	"github.com/gorilla/mux"
 )
 
 func run() error {
-	if err := config.LoadEnv(); err != nil {
-		return err
-	}
-
-	config := config.NewConfig()
-
-	db, err := db.NewConnection(config)
+	db, err := db.NewConnection()
 	if err != nil {
 		return err
 	}
 	defer db.Close(context.Background())
 
-	taskCategoryStorage := task_category.NewTaskCategoryStorage(db)
-	taskCategoryService := task_category.NewTaskCategoryService(taskCategoryStorage)
+	redis, err := redis.NewConnection()
+	if err != nil {
+		return err
+	}
+
+	authStorage := auth.NewStorage(db)
+	authService := auth.NewService(authStorage, redis)
+	taskCategoryStorage := task_category.NewStorage(db)
+	taskCategoryService := task_category.NewService(taskCategoryStorage)
 
 	router := mux.NewRouter()
 	server := api.NewServer(
 		router,
+		authService,
 		taskCategoryService,
 	)
 

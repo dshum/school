@@ -10,5 +10,7 @@ func JSONResponse(w http.ResponseWriter, code int, output interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
-	w.Write(response)
+	if _, err := w.Write(response); err != nil {
+		return
+	}
 }

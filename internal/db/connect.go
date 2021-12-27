@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-func NewConnection(config *config.Config) (*pgx.Conn, error) {
+func NewConnection() (*pgx.Conn, error) {
 	url := fmt.Sprintf("%s://%s:%s@%s:%s/%s",
 		config.DB.Driver,
 		config.DB.UserName,

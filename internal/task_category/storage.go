@@ -2,11 +2,10 @@ package task_category
 
 import (
 	"context"
-
 	"github.com/jackc/pgx/v4"
 )
 
-type TaskCategoryStorage interface {
+type Storage interface {
 	GetList() ([]TaskCategory, error)
 	Get(id int) (TaskCategory, error)
 }
@@ -15,14 +14,14 @@ type taskCategoryStorage struct {
 	db *pgx.Conn
 }
 
-func NewTaskCategoryStorage(db *pgx.Conn) TaskCategoryStorage {
+func NewStorage(db *pgx.Conn) Storage {
 	return &taskCategoryStorage{
 		db: db,
 	}
 }
 
 func (s *taskCategoryStorage) GetList() ([]TaskCategory, error) {
-	allTaskCategories := []TaskCategory{}
+	var allTaskCategories []TaskCategory
 
 	rows, err := s.db.Query(context.Background(), "SELECT id, name, url, \"order\", fullcontent, hide, created_at, updated_at FROM task_categories order by id")
 	if err != nil {

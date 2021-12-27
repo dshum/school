@@ -8,22 +8,24 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type TaskCategoryService interface {
+type Service interface {
 	GetTaskCategories(w http.ResponseWriter, r *http.Request)
 	GetTaskCategory(w http.ResponseWriter, r *http.Request)
 }
 
 type taskCategoryService struct {
-	storage TaskCategoryStorage
+	storage Storage
 }
 
-func NewTaskCategoryService(storage TaskCategoryStorage) TaskCategoryService {
+func NewService(storage Storage) Service {
 	return &taskCategoryService{
 		storage: storage,
 	}
 }
 
-func (t *taskCategoryService) GetTaskCategories(w http.ResponseWriter, r *http.Request) {
+func (t *taskCategoryService) GetTaskCategories(w http.ResponseWriter, _ *http.Request) {
+	// panic("Unexpected error!")
+
 	if taskCategories, err := t.storage.GetList(); err != nil {
 		utils.JSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	} else {

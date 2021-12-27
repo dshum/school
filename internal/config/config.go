@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -16,20 +17,35 @@ var (
 	projectRootPath = filepath.Join(filepath.Dir(b), "../../")
 )
 
+var (
+	DB    DBConfig
+	JWT   JWTConfig
+	Redis RedisConfig
+)
+
 type Config struct {
-	DB DBConfig
+	DB    DBConfig
+	JWT   JWTConfig
+	Redis RedisConfig
 }
 
-func LoadEnv() error {
+func init() {
 	if err := godotenv.Load(projectRootPath + string(os.PathSeparator) + ".env"); err != nil {
-		return err
+		log.Println(err)
+		os.Exit(1)
 	}
 
-	return nil
+	c := NewConfig()
+
+	DB = c.DB
+	JWT = c.JWT
+	Redis = c.Redis
 }
 
 func NewConfig() *Config {
 	return &Config{
-		DB: *NewDBConfig(),
+		DB:    *NewDBConfig(),
+		JWT:   *NewJWTConfig(),
+		Redis: *NewRedisConfig(),
 	}
 }

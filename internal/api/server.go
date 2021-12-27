@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/dshum/school/internal/auth"
 	"net/http"
 
 	"github.com/dshum/school/internal/task_category"
@@ -9,12 +10,18 @@ import (
 
 type Server struct {
 	router              *mux.Router
-	taskCategoryService task_category.TaskCategoryService
+	authService         auth.Service
+	taskCategoryService task_category.Service
 }
 
-func NewServer(router *mux.Router, taskCategoryService task_category.TaskCategoryService) *Server {
+func NewServer(
+	router *mux.Router,
+	authService auth.Service,
+	taskCategoryService task_category.Service,
+) *Server {
 	return &Server{
 		router:              router,
+		authService:         authService,
 		taskCategoryService: taskCategoryService,
 	}
 }
