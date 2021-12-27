@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/dshum/school/internal/utils"
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 	"net/http"
 )
 
@@ -39,11 +39,11 @@ func (s *authService) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authErr := utils.CreateAuth(user.Id, token)
-	if authErr != nil {
-		utils.JSONResponse(w, http.StatusUnprocessableEntity, map[string]string{"error": authErr.Error()})
-		return
-	}
+	// authErr := utils.CreateAuth(user.Id, token)
+	// if authErr != nil {
+	// 	utils.JSONResponse(w, http.StatusUnprocessableEntity, map[string]string{"error": authErr.Error()})
+	// 	return
+	// }
 
 	utils.JSONResponse(w, http.StatusOK, map[string]interface{}{"id": user.Id, "token": token})
 }

@@ -1,8 +1,9 @@
 package redis
 
 import (
+	"context"
 	"github.com/dshum/school/internal/config"
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 	"strconv"
 )
 
@@ -15,7 +16,7 @@ func NewConnection() (*redis.Client, error) {
 		DB:       db,
 	})
 
-	_, err := client.Ping().Result()
+	_, err := client.Ping(context.Background()).Result()
 	if err != nil {
 		return nil, err
 	}
